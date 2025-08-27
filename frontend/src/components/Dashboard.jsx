@@ -2,96 +2,104 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { Alert, AlertDescription } from './ui/alert';
 import { 
   DollarSign, 
   TrendingUp, 
+  TrendingDown,
   Users, 
   ShoppingBag,
   Store,
   Target,
   Calendar,
-  Filter
+  Filter,
+  AlertTriangle,
+  Award,
+  BarChart3,
+  PieChart,
+  CreditCard
 } from 'lucide-react';
 import { 
-  mockMetrics, 
-  mockRevenueData, 
-  mockCategoryData,
-  mockTopPerformers,
+  mockKPIs,
+  mockIndustryBenchmarks,
+  mockMerchantSegments,
+  mockRiskAlerts,
   formatCurrency,
   formatNumber
 } from '../mock';
-import RevenueChart from './RevenueChart';
-import TransactionsTable from './TransactionsTable';
-import CategoryChart from './CategoryChart';
+import ForecastingChart from './ForecastingChart';
+import MerchantTable from './MerchantTable';
+import SegmentationChart from './SegmentationChart';
+import RiskAssessment from './RiskAssessment';
+import IndustryAnalysis from './IndustryAnalysis';
 
 const Dashboard = () => {
-  const [timeFilter, setTimeFilter] = useState('7d');
-  const [selectedMerchant, setSelectedMerchant] = useState('all');
+  const [timeFilter, setTimeFilter] = useState('30d');
+  const [industryFilter, setIndustryFilter] = useState('all');
 
   const kpiCards = [
     {
-      title: 'Total Revenue',
-      value: formatCurrency(mockMetrics.totalRevenue),
+      title: 'Total Merchant Revenue',
+      value: formatCurrency(mockKPIs.totalMerchantRevenue),
       icon: DollarSign,
-      change: '+12.5%',
+      change: '+8.4%',
       changeType: 'positive',
-      description: 'vs last month'
+      description: 'YoY growth'
     },
     {
-      title: 'Total Transactions',
-      value: formatNumber(mockMetrics.totalTransactions),
+      title: 'Transaction Volume',
+      value: formatNumber(mockKPIs.totalTransactionVolume),
       icon: ShoppingBag,
-      change: '+8.2%', 
+      change: '+12.7%', 
       changeType: 'positive',
-      description: 'vs last month'
+      description: 'vs last quarter'
     },
     {
-      title: 'Average Order Value',
-      value: formatCurrency(mockMetrics.averageOrderValue),
+      title: 'Average Ticket Size',
+      value: formatCurrency(mockKPIs.averageTicketSize),
       icon: TrendingUp,
-      change: '+5.1%',
+      change: '+5.8%',
       changeType: 'positive',
-      description: 'vs last month'
+      description: 'vs last quarter'
     },
     {
-      title: 'Conversion Rate',
-      value: `${mockMetrics.conversionRate}%`,
+      title: 'Merchant Retention',
+      value: `${mockKPIs.merchantRetentionRate}%`,
       icon: Target,
-      change: '-0.5%',
-      changeType: 'negative', 
-      description: 'vs last month'
+      change: '+2.1%',
+      changeType: 'positive', 
+      description: 'retention rate'
     },
     {
-      title: 'Active Stores',
-      value: formatNumber(mockMetrics.activeStores),
-      icon: Store,
+      title: 'High Performers',
+      value: formatNumber(mockKPIs.highPerformers),
+      icon: Award,
       change: '+15',
       changeType: 'positive',
-      description: 'new this month'
+      description: 'top tier merchants'
     },
     {
-      title: 'New Customers',
-      value: formatNumber(mockMetrics.newCustomers),
-      icon: Users,
-      change: '+23.1%',
+      title: 'At-Risk Alerts',
+      value: formatNumber(mockKPIs.atRiskMerchants),
+      icon: AlertTriangle,
+      change: '-8',
       changeType: 'positive',
-      description: 'vs last month'
+      description: 'requiring attention'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-green-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Merchant Performance Dashboard
+              American Express Merchant Insights
             </h1>
             <p className="text-gray-600 mt-1">
-              Monitor and analyze merchant performance metrics
+              Advanced analytics and performance optimization for merchant portfolio
             </p>
           </div>
           
@@ -109,27 +117,40 @@ const Dashboard = () => {
               </SelectContent>
             </Select>
             
-            <Select value={selectedMerchant} onValueChange={setSelectedMerchant}>
+            <Select value={industryFilter} onValueChange={setIndustryFilter}>
               <SelectTrigger className="w-[160px]">
                 <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="All Merchants" />
+                <SelectValue placeholder="All Industries" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Merchants</SelectItem>
-                <SelectItem value="1">TechStore Pro</SelectItem>
-                <SelectItem value="2">Fashion Hub</SelectItem>
-                <SelectItem value="4">BookWorld</SelectItem>
+                <SelectItem value="all">All Industries</SelectItem>
+                <SelectItem value="technology">Technology</SelectItem>
+                <SelectItem value="retail">Retail & Fashion</SelectItem>
+                <SelectItem value="hospitality">Food & Hospitality</SelectItem>
+                <SelectItem value="healthcare">Healthcare</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
+
+        {/* Risk Alerts */}
+        {mockRiskAlerts.filter(alert => alert.priority === 1).length > 0 && (
+          <Alert className="border-red-200 bg-red-50">
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-800">
+              <strong>Urgent:</strong> {mockRiskAlerts.filter(alert => alert.priority === 1).length} merchants require immediate attention. 
+              <span className="underline cursor-pointer ml-2">View Risk Assessment →</span>
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
           {kpiCards.map((kpi, index) => {
             const Icon = kpi.icon;
             return (
-              <Card key={index} className="hover:shadow-lg transition-shadow duration-200">
+              <Card key={index} className="hover:shadow-lg transition-all duration-300 border-l-4" 
+                    style={{ borderLeftColor: '#43ff6f' }}>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(67, 255, 111, 0.1)' }}>
@@ -166,56 +187,66 @@ const Dashboard = () => {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+          <TabsList className="grid w-full grid-cols-6 lg:w-[800px]">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="revenue">Revenue</TabsTrigger>
+            <TabsTrigger value="forecasting">Forecasting</TabsTrigger>
+            <TabsTrigger value="segmentation">Segmentation</TabsTrigger>
+            <TabsTrigger value="risk">Risk Analysis</TabsTrigger>
+            <TabsTrigger value="industry">Benchmarks</TabsTrigger>
             <TabsTrigger value="merchants">Merchants</TabsTrigger>
-            <TabsTrigger value="transactions">Transactions</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Revenue Trend</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <PieChart className="h-5 w-5" style={{ color: '#43ff6f' }} />
+                    Merchant Segmentation Overview
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <RevenueChart data={mockRevenueData} />
+                  <SegmentationChart data={mockMerchantSegments} />
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Revenue by Category</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" style={{ color: '#43ff6f' }} />
+                    Industry Performance Snapshot
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CategoryChart data={mockCategoryData} />
+                  <IndustryAnalysis data={mockIndustryBenchmarks} />
                 </CardContent>
               </Card>
             </div>
 
             <Card>
               <CardHeader>
-                <CardTitle>Top Performing Merchants</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Award className="h-5 w-5" style={{ color: '#43ff6f' }} />
+                  Top Revenue Contributors (Pareto Analysis)
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockTopPerformers.map((merchant, index) => (
-                    <div key={merchant.merchantId} className="flex items-center justify-between p-4 border rounded-lg">
+                  {mockMerchantSegments.slice(0, 3).map((segment, index) => (
+                    <div key={segment.segment} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                       <div className="flex items-center gap-4">
-                        <div className="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm text-white"
+                             style={{ backgroundColor: segment.color }}>
                           {index + 1}
                         </div>
                         <div>
-                          <p className="font-medium">{merchant.merchantName}</p>
-                          <p className="text-sm text-gray-600">{merchant.transactions} transactions</p>
+                          <p className="font-medium">{segment.segment}</p>
+                          <p className="text-sm text-gray-600">{segment.count} merchants • {segment.characteristics}</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">{formatCurrency(merchant.revenue)}</p>
-                        <Badge variant="secondary" className="text-green-600 bg-green-50">
-                          +{merchant.growth}%
-                        </Badge>
+                        <p className="font-semibold">{formatCurrency(segment.totalRevenue)}</p>
+                        <p className="text-sm text-gray-600">{formatCurrency(segment.avgRevenue)} avg</p>
                       </div>
                     </div>
                   ))}
@@ -224,33 +255,38 @@ const Dashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="revenue">
+          <TabsContent value="forecasting">
+            <ForecastingChart />
+          </TabsContent>
+
+          <TabsContent value="segmentation">
             <Card>
               <CardHeader>
-                <CardTitle>Revenue Analytics</CardTitle>
+                <CardTitle>Merchant Segmentation Analysis</CardTitle>
               </CardHeader>
               <CardContent>
-                <RevenueChart data={mockRevenueData} detailed={true} />
+                <SegmentationChart data={mockMerchantSegments} detailed={true} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="risk">
+            <RiskAssessment />
+          </TabsContent>
+
+          <TabsContent value="industry">
+            <Card>
+              <CardHeader>
+                <CardTitle>Industry Benchmarks & Performance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <IndustryAnalysis data={mockIndustryBenchmarks} detailed={true} />
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="merchants">
-            <Card>
-              <CardHeader>
-                <CardTitle>Merchant Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Store className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Merchant analytics coming soon</p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="transactions">
-            <TransactionsTable />
+            <MerchantTable />
           </TabsContent>
         </Tabs>
       </div>
