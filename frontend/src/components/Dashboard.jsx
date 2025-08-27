@@ -132,8 +132,8 @@ const Dashboard = () => {
               <Card key={index} className="hover:shadow-lg transition-shadow duration-200">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
-                    <div className="bg-blue-50 p-2 rounded-lg">
-                      <Icon className="h-5 w-5 text-blue-600" />
+                    <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(67, 255, 111, 0.1)' }}>
+                      <Icon className="h-5 w-5" style={{ color: '#43ff6f' }} />
                     </div>
                     <Badge 
                       variant="secondary"
